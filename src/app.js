@@ -3,8 +3,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import logger from 'morgan';
 
-import indexRouter from './routes/index.js';
-import usersRouter from './routes/users.js';
+import indexRouter from '../routes/index.js';
 
 var app = express();
 
@@ -14,7 +13,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
