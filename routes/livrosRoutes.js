@@ -5,8 +5,8 @@ const router = express.Router();
 
 router.get("/livros",LivroController.listarLivros);
 router.get("/livros/:id",LivroController.getByIdLivro);
-router.post("/livros/add",LivroController.addLivros);
-router.put("/livros/upd/:id",LivroController.updLivros);
-router.delete("/livros/del/:id",LivroController.delLivro);
+router.post("/livros",LivroController.addLivros);
+router.put("/livros/:id",LivroController.updLivros);
+router.delete("/livros/:id",LivroController.delLivro);
 
 export default router;
