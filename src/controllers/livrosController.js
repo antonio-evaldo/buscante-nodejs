@@ -1,54 +1,82 @@
 import livros from "../../models/Livro.js"
 import db from "../../config/dbConnect.js"
 
-db.on("error",console.log.bind(console,'Erro de conexão do banco'))
-db.once("open", ()=>{
-  console.log('Conexão com o banco feita com sucesso')
+db.on("error", console.log.bind(console, 'Erro de conexão do banco'))
+db.once("open", () => {
+   console.log('Conexão com o banco feita com sucesso')
 })
 
-class LivroController{
-    //listar livros
-   static listarLivros=(req,res)=>{
-      livros.find((err, livros)=>{
-         res.status(200).json(livros);
-       })
+class LivroController {
+   //listar livros
+   static listarLivros = async (req, res) => {
+      try {
+         const livrosResultado = await livros.find();
+
+         res.status(200).json(livrosResultado);
+      } catch (erro) {
+         console.log(erro);
+         res.status(500).json(erro);
+      }
    }
 
    //buscar por id
-   static getByIdLivro=(req,res)=>{
-      const id = parseInt(req.params.id);
-      const result = livros.filter(liv=>liv.id===id)
-      console.log(result);
-      res.status(200).json(result);
+   static getByIdLivro = async (req, res) => {
+      const id = req.params.id;
+      try {
+         const livroResultado = await livros.findById(id);
+
+         res.status(200).json(livroResultado);
+      } catch (erro) {
+         console.log(erro);
+         res.status(500).json(erro);
+      }
    }
 
    //adicionar livros
-   static addLivros=(req,res)=>{
-    const novoLivro = req.body;
-      livros.push(novoLivro);
-      res.status(201).send({mensagem:'Livro adicionado com sucesso!'});
+   static addLivros = async (req, res) => {
+      try {
+         console.log(req.body);
+
+         const novoLivro = new livros(req.body);
+   
+         const novoLivroResultado = await novoLivro.save();
+   
+         res.status(201).send(novoLivroResultado);
+      } catch (erro) {
+         console.log(erro);
+         res.status(500).json(erro);
+      }
    }
 
    //atualiza livros
-   static updLivros=(req,res)=>{
-      const index = buscaLivro(parseInt(req.params.id));
-      livros[index].sinopse= req.body.sinopse;  
-      res.status(200).json(livros);
+   static updLivros = async (req, res) => {
+      const { id } = req.params;
+
+      try {
+         const livroResultado = await livros.findByIdAndUpdate(id, req.body, {
+            new: true
+         });
+   
+         res.status(201).send(livroResultado);
+      } catch (erro) {
+         console.log(erro);
+         res.status(500).json(erro);
+      }
    }
 
    //remove livro
-   static delLivro=(req,res)=>{
-        const id = parseInt(req.params.id);
-        livros.splice(id,1);
-        console.log(livros);
-        res.status(200).send({mensagem:'Livro removido com sucesso!'});
-   }
-}
+   static delLivro = async (req, res) => {
+      const { id } = req.params;
 
-function buscaLivro(id)
-{
-  const livroItem = livros.findIndex(livro=>livro.id==id);
-  return livroItem;
+      try {
+         const livroResultado = await livros.findByIdAndDelete(id, req.body);
+   
+         res.status(201).send(livroResultado);
+      } catch (erro) {
+         console.log(erro);
+         res.status(500).json(erro);
+      }
+   }
 }
 
 export default LivroController;
